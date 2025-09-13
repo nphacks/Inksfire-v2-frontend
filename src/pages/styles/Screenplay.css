@@ -1,0 +1,47 @@
+.screenplay {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  line-height: 1;
+  margin: 1in 1in 1in 1.5in;
+  width: 6in;
+}
+
+.screenplay-page1 {
+  min-height: 11in;
+  position: relative;
+}
+
+.title-section {
+  text-align: center;
+  margin-top: 2in;
+}
+
+.title-input, .author-input {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  text-align: center;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+
+.title-input {
+  text-transform: uppercase;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.contact-input, .date-input {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  border: none;
+  background: transparent;
+}
+
+.screenplay-pages {
+  margin-top: 1in;
+}
+
+.screenplay-scene {
+  margin-bottom: 0.5in;
+}
