@@ -201,7 +201,7 @@ export default function Screenplay() {
                         ));
                       }}
                       autoFocus
-                    placeholder="INT./EXT. LOCATION - TIME"
+                      placeholder="Scene description and dialogue..."
                     />
                   ) : (
                     <div 
@@ -218,17 +218,5 @@ export default function Screenplay() {
         </div>
       )}
     </div>
-  );
-}
-                    placeholder="Scene description and dialogue..."
-                />
-              </div>
-            ))}
-            </div>
-          </div>
-        </div>
-        
-      )}
-    </>
   );
 }
