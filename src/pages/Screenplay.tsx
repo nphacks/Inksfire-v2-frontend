@@ -3,220 +3,214 @@ import { useEffect, useState } from "react";
 import { fetchScreenplayByIdFromDB, updateScreenplayDataInDB } from "../services/screenplay";
 import "./styles/Screenplay.css";
 
+interface Scene {
+  id: string;
+  slugline: string;
+  scene: string;
+}
+
 export default function Screenplay() {
   const navigate = useNavigate();
   const { screenplay_id } = useParams();
   const [screenplay, setScreenplay] = useState<any>(null);
-  const [scenes, setScenes] = useState<any[]>([
+  const [scenes, setScenes] = useState<Scene[]>([
     {
-      id: 1,
+      id: '1',
       slugline: 'INT. DILAPIDATED HOTEL ROOM - DAY',
       scene: 'Another BANG on the door- Saito, confident now, approaches Cobb. Nash is behind Saito.'
     }
   ]);
-  const [editingField, setEditingField] = useState<string | null>(null);
 
   useEffect(() => {
     const loadScreenplay = async () => {
       if (screenplay_id) {
         const screenplayData = await fetchScreenplayByIdFromDB(screenplay_id);
-        setScreenplay(screenplayData);
+        if (screenplayData) {
+          setScreenplay(screenplayData);
+        }
       }
     };
     loadScreenplay();
   }, [screenplay_id]);
 
-  const handleFieldClick = (field: string) => {
-    setEditingField(field);
-  };
-
-  const handleFieldBlur = async (field: string, value: string) => {
-    setEditingField(null);
-    setScreenplay((prev: any) => ({
-      ...prev,
-      [field]: value
-    }));
-    await updateScreenplayDataInDB(screenplay_id!, field, value);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      (e.target as HTMLElement).blur();
+  const handleContentChange = async (field: string, value: string, sceneId?: string) => {
+    if (sceneId) {
+      // Handle scene updates
+      setScenes(prev => prev.map(scene => 
+        scene.id === sceneId 
+          ? { ...scene, [field]: value }
+          : scene
+      ));
+    } else {
+      // Handle screenplay metadata updates
+      setScreenplay((prev: any) => ({
+        ...prev,
+        [field]: value
+      }));
+      
+      if (screenplay_id) {
+        await updateScreenplayDataInDB(screenplay_id, field, value);
+      }
     }
   };
 
   const addScene = () => {
-    const newScene = {
-      id: Date.now(),
+    const newScene: Scene = {
+      id: Date.now().toString(),
       slugline: '',
       scene: ''
     };
     setScenes(prev => [...prev, newScene]);
   };
 
+  const removeScene = (sceneId: string) => {
+    setScenes(prev => prev.filter(scene => scene.id !== sceneId));
+  };
+
+  if (!screenplay) {
+    return <div className="loading">Loading screenplay...</div>;
+  }
+
   return (
     <div className="screenplay-container">
-      {screenplay && (
-        <div className="screenplay">
-          <div className="screenplay-page1">
-            <div className="title-section">
-              {editingField === 'title' ? (
-                <input
-                  className="title-input editing"
-                  defaultValue={screenplay?.title || ''}
-                  onBlur={(e) => handleFieldBlur('title', e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, 'title')}
-                  autoFocus
-                  placeholder="TITLE"
-                />
-              ) : (
-                <div 
-                  className="title-display"
-                  onClick={() => handleFieldClick('title')}
-                >
-                  {screenplay?.title || 'UNTITLED'}
-                </div>
-              )}
-              
-              <div className="written-by">Written by</div>
-              
-              {editingField === 'author' ? (
-                <input
-                  className="author-input editing"
-                  defaultValue={screenplay?.author || ''}
-                  onBlur={(e) => handleFieldBlur('author', e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, 'author')}
-                  autoFocus
-                  placeholder="Author Name"
-                />
-              ) : (
-                <div 
-                  className="author-display"
-                  onClick={() => handleFieldClick('author')}
-                >
-                  {screenplay?.author || 'Author Name'}
-                </div>
-              )}
-              
-              {(screenplay?.based_on || screenplay?.based_on === '') && (
-                <div className="based-on-section">
-                  <div className="based-on-label">Based on</div>
-                  {editingField === 'based_on' ? (
-                    <input
-                      className="based-on-input editing"
-                      defaultValue={screenplay?.based_on || ''}
-                      onBlur={(e) => handleFieldBlur('based_on', e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, 'based_on')}
-                      autoFocus
-                      placeholder="Source material"
-                    />
-                  ) : (
-                    <div 
-                      className="based-on-display"
-                      onClick={() => handleFieldClick('based_on')}
-                    >
-                      {screenplay?.based_on || 'Source material'}
-                    </div>
-                  )}
-                </div>
-              )}
+      <div className="screenplay-document">
+        {/* Title Page */}
+        <div className="screenplay-page title-page">
+          <div className="title-section">
+            <div 
+              className="title-field"
+              contentEditable
+              suppressContentEditableWarning
+              data-field="title"
+              onBlur={(e) => handleContentChange('title', e.currentTarget.textContent || '')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
+              }}
+            >
+              {screenplay.title || 'UNTITLED'}
             </div>
             
-            <div className="contact-info">
-              {editingField === 'contact_information' ? (
-                <textarea
-                  className="contact-input editing"
-                  defaultValue={screenplay?.contact_information || ''}
-                  onBlur={(e) => handleFieldBlur('contact_information', e.target.value)}
-                  autoFocus
-                  placeholder="Contact Information"
-                />
-              ) : (
-                <div 
-                  className="contact-display"
-                  onClick={() => handleFieldClick('contact_information')}
-                >
-                  {screenplay?.contact_information || 'Contact Information'}
-                </div>
-              )}
-              
-              {editingField === 'draft_date' ? (
-                <input
-                  type="date"
-                  className="date-input editing"
-                  defaultValue={screenplay?.draft_date || ''}
-                  onBlur={(e) => handleFieldBlur('draft_date', e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, 'draft_date')}
-                  autoFocus
-                />
-              ) : (
-                <div 
-                  className="date-display"
-                  onClick={() => handleFieldClick('draft_date')}
-                >
-                  {screenplay?.draft_date || new Date().toLocaleDateString()}
-                </div>
-              )}
+            <div className="written-by-label">Written by</div>
+            
+            <div 
+              className="author-field"
+              contentEditable
+              suppressContentEditableWarning
+              data-field="author"
+              onBlur={(e) => handleContentChange('author', e.currentTarget.textContent || '')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
+              }}
+            >
+              {screenplay.author || 'Author Name'}
+            </div>
+            
+            <div className="based-on-section">
+              <div className="based-on-label">Based on</div>
+              <div 
+                className="based-on-field"
+                contentEditable
+                suppressContentEditableWarning
+                data-field="based_on"
+                onBlur={(e) => handleContentChange('based_on', e.currentTarget.textContent || '')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
+              >
+                {screenplay.based_on || 'Source material (optional)'}
+              </div>
             </div>
           </div>
           
-          <div className="screenplay-pages">
-            <button className="add-scene-button" onClick={addScene}>Add Scene</button>
-            <div className="screenplay-page">
-              <div className="page-number">2.</div>
-              {scenes.map((scene, index) => (
-                <div key={scene.id} className="screenplay-scene">
-                  {editingField === `slugline-${scene.id}` ? (
-                    <input 
-                      className="slugline-input editing"
-                      defaultValue={scene?.slugline || ''} 
-                      onBlur={(e) => {
-                        setEditingField(null);
-                        setScenes(prev => prev.map(s => 
-                          s.id === scene.id ? { ...s, slugline: e.target.value } : s
-                        ));
-                      }}
-                      onKeyDown={(e) => handleKeyDown(e, `slugline-${scene.id}`)}
-                      autoFocus
-                      placeholder="INT./EXT. LOCATION - TIME"
-                    />
-                  ) : (
-                    <div 
-                      className="slugline-display"
-                      onClick={() => handleFieldClick(`slugline-${scene.id}`)}
-                    >
-                      {scene?.slugline || 'INT./EXT. LOCATION - TIME'}
-                    </div>
-                  )}
-                  
-                  {editingField === `scene-${scene.id}` ? (
-                    <textarea 
-                      className="scene-input editing"
-                      defaultValue={scene?.scene || ''} 
-                      onBlur={(e) => {
-                        setEditingField(null);
-                        setScenes(prev => prev.map(s => 
-                          s.id === scene.id ? { ...s, scene: e.target.value } : s
-                        ));
-                      }}
-                      autoFocus
-                      placeholder="Scene description and dialogue..."
-                    />
-                  ) : (
-                    <div 
-                      className="scene-display"
-                      onClick={() => handleFieldClick(`scene-${scene.id}`)}
-                    >
-                      {scene?.scene || 'Scene description and dialogue...'}
-                    </div>
-                  )}
-                </div>
-              ))}
+          <div className="contact-info">
+            <div 
+              className="contact-field"
+              contentEditable
+              suppressContentEditableWarning
+              data-field="contact_information"
+              onBlur={(e) => handleContentChange('contact_information', e.currentTarget.textContent || '')}
+            >
+              {screenplay.contact_information || 'Contact Information'}
+            </div>
+            
+            <div 
+              className="date-field"
+              contentEditable
+              suppressContentEditableWarning
+              data-field="draft_date"
+              onBlur={(e) => handleContentChange('draft_date', e.currentTarget.textContent || '')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
+              }}
+            >
+              {screenplay.draft_date || new Date().toLocaleDateString()}
             </div>
           </div>
         </div>
-      )}
+
+        {/* Script Pages */}
+        <div className="screenplay-page script-page">
+          <div className="page-number">2.</div>
+          
+          {scenes.map((scene) => (
+            <div key={scene.id} className="scene-block" data-scene-id={scene.id}>
+              <div className="scene-controls">
+                <button 
+                  className="remove-scene-btn"
+                  onClick={() => removeScene(scene.id)}
+                  title="Remove scene"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div 
+                className="slugline-field"
+                contentEditable
+                suppressContentEditableWarning
+                data-field="slugline"
+                data-scene-id={scene.id}
+                onBlur={(e) => handleContentChange('slugline', e.currentTarget.textContent || '', scene.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
+              >
+                {scene.slugline || 'INT./EXT. LOCATION - TIME'}
+              </div>
+              
+              <div 
+                className="scene-field"
+                contentEditable
+                suppressContentEditableWarning
+                data-field="scene"
+                data-scene-id={scene.id}
+                onBlur={(e) => handleContentChange('scene', e.currentTarget.textContent || '', scene.id)}
+              >
+                {scene.scene || 'Scene description and dialogue...'}
+              </div>
+            </div>
+          ))}
+          
+          <button className="add-scene-btn" onClick={addScene}>
+            + Add Scene
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

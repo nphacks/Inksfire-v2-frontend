@@ -1,3 +1,8 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
 .screenplay-container {
   min-height: 100vh;
   background: #f5f5f5;
@@ -7,149 +12,92 @@
   align-items: flex-start;
 }
 
-.screenplay {
+.screenplay-document {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+
+/* Page styles */
+.screenplay-page {
+  width: 8.27in;
+  min-height: 11.69in;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  position: relative;
   font-family: 'Courier New', monospace;
   font-size: 12pt;
   line-height: 1.2;
   color: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
 }
 
-.screenplay-page1 {
-  width: 8.27in; /* A4 width */
-  height: 11.69in; /* A4 height */
-  padding: 1in 1in 1in 1.5in; /* Top, Right, Bottom, Left margins */
-  position: relative;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  page-break-after: always;
-  border: 1px solid #ddd;
+.title-page {
+  padding: 1in 1in 1in 1.5in;
 }
 
+.script-page {
+  padding: 1in 1in 1in 1.5in;
+}
+
+/* Title page styles */
 .title-section {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: calc(100% - 2.5in);
   text-align: center;
-  width: 100%;
 }
 
-/* Display styles */
-.title-display,
-.author-display,
-.based-on-display,
-.contact-display,
-.date-display,
-.slugline-display,
-.scene-display {
-  font-family: 'Courier New', monospace;
+.title-field {
   font-size: 12pt;
-  color: #000;
-  cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 2px;
-  transition: background-color 0.2s;
-}
-
-.title-display:hover,
-.author-display:hover,
-.based-on-display:hover,
-.contact-display:hover,
-.date-display:hover,
-.slugline-display:hover,
-.scene-display:hover {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.title-display {
-  text-align: center;
+  font-weight: bold;
   text-transform: uppercase;
   text-decoration: underline;
-  font-weight: bold;
   margin-bottom: 24pt;
   min-height: 20px;
-}
-
-.author-display {
-  text-align: center;
-  margin-bottom: 12pt;
-  min-height: 20px;
-}
-
-.based-on-display {
-  text-align: center;
-  min-height: 20px;
-}
-
-.contact-display {
-  width: 200px;
-  height: 80px;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-
-.date-display {
-  text-align: right;
-  min-height: 20px;
-}
-
-.slugline-display {
-  text-transform: uppercase;
-  font-weight: bold;
-  margin-bottom: 12pt;
-  min-height: 20px;
-  width: 100%;
-}
-
-.scene-display {
-  min-height: 60pt;
-  white-space: pre-wrap;
-  line-height: 1.2;
-  width: 100%;
-}
-
-/* Input styles when editing */
-.title-input.editing {
-  font-family: 'Courier New', monospace;
-  font-size: 12pt;
-  text-align: center;
-  border: 2px solid #007acc;
-  background: white;
+  padding: 4px;
+  border-radius: 2px;
   color: #000;
-  width: 100%;
-  text-transform: uppercase;
-  text-decoration: underline;
-  font-weight: bold;
+  outline: none;
+  cursor: text;
+}
+
+.title-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
+}
+
+.title-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
+}
+
+.written-by-label {
+  font-size: 12pt;
+  margin-bottom: 12pt;
+  color: #000;
+}
+
+.author-field {
+  font-size: 12pt;
   margin-bottom: 24pt;
-  outline: none;
-  padding: 2px 4px;
+  min-height: 20px;
+  padding: 4px;
   border-radius: 2px;
+  color: #000;
+  outline: none;
+  cursor: text;
 }
 
-.written-by {
-  font-family: 'Courier New', monospace;
-  font-size: 12pt;
-  margin-bottom: 12pt;
-  text-align: center;
-  color: #000;
+.author-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
 }
 
-.author-input.editing {
-  font-family: 'Courier New', monospace;
-  font-size: 12pt;
-  text-align: center;
-  border: 2px solid #007acc;
-  background: white;
-  color: #000;
-  width: 100%;
-  margin-bottom: 12pt;
-  outline: none;
-  padding: 2px 4px;
-  border-radius: 2px;
+.author-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
 }
 
 .based-on-section {
@@ -157,136 +105,192 @@
 }
 
 .based-on-label {
-  font-family: 'Courier New', monospace;
   font-size: 12pt;
-  text-align: center;
   margin-bottom: 12pt;
   color: #000;
 }
 
-.based-on-input.editing {
-  font-family: 'Courier New', monospace;
+.based-on-field {
   font-size: 12pt;
-  text-align: center;
-  border: 2px solid #007acc;
-  background: white;
-  color: #000;
-  width: 100%;
-  outline: none;
-  padding: 2px 4px;
+  min-height: 20px;
+  padding: 4px;
   border-radius: 2px;
+  color: #000;
+  outline: none;
+  cursor: text;
 }
 
+.based-on-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
+}
+
+.based-on-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
+}
+
+/* Contact info */
 .contact-info {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 1in;
+  left: 1.5in;
+  right: 1in;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
-.contact-input.editing {
-  font-family: 'Courier New', monospace;
+.contact-field {
   font-size: 12pt;
-  border: 2px solid #007acc;
-  background: white;
-  color: #000;
-  resize: none;
   width: 200px;
-  height: 80px;
-  outline: none;
-  padding: 2px 4px;
+  min-height: 80px;
+  padding: 4px;
   border-radius: 2px;
-}
-
-.date-input.editing {
-  font-family: 'Courier New', monospace;
-  font-size: 12pt;
-  border: 2px solid #007acc;
-  background: white;
   color: #000;
   outline: none;
+  cursor: text;
+  white-space: pre-wrap;
+}
+
+.contact-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
+}
+
+.contact-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
+}
+
+.date-field {
+  font-size: 12pt;
   text-align: right;
-  padding: 2px 4px;
+  min-height: 20px;
+  padding: 4px;
   border-radius: 2px;
+  color: #000;
+  outline: none;
+  cursor: text;
 }
 
-.screenplay-pages {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+.date-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
 }
 
-.screenplay-page {
-  width: 8.27in; /* A4 width */
-  min-height: 11.69in; /* A4 height */
-  padding: 1in 1in 1in 1.5in; /* Top, Right, Bottom, Left margins */
-  position: relative;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  page-break-after: always;
-  border: 1px solid #ddd;
+.date-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
 }
 
+/* Script page styles */
 .page-number {
   position: absolute;
   top: 0.5in;
-  right: 0;
-  font-family: 'Courier New', monospace;
+  right: 1in;
   font-size: 12pt;
   color: #000;
 }
 
-.screenplay-scene {
+.scene-block {
   margin-bottom: 24pt;
+  position: relative;
 }
 
-.slugline-input.editing {
-  font-family: 'Courier New', monospace;
+.scene-controls {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.scene-block:hover .scene-controls {
+  opacity: 1;
+}
+
+.remove-scene-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-scene-btn:hover {
+  background: #cc0000;
+}
+
+.slugline-field {
   font-size: 12pt;
-  border: 2px solid #007acc;
-  background: white;
-  color: #000;
-  width: 100%;
-  text-transform: uppercase;
   font-weight: bold;
+  text-transform: uppercase;
   margin-bottom: 12pt;
-  outline: none;
-  padding: 2px 4px;
+  min-height: 20px;
+  padding: 4px;
   border-radius: 2px;
-}
-
-.scene-input.editing {
-  font-family: 'Courier New', monospace;
-  font-size: 12pt;
-  border: 2px solid #007acc;
-  background: white;
   color: #000;
-  width: 100%;
-  resize: none;
-  min-height: 60pt;
   outline: none;
-  line-height: 1.2;
-  padding: 2px 4px;
-  border-radius: 2px;
+  cursor: text;
 }
 
-.add-scene-button {
-  font-family: 'Courier New', monospace;
+.slugline-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
+}
+
+.slugline-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
+}
+
+.scene-field {
   font-size: 12pt;
+  min-height: 60pt;
+  padding: 4px;
+  border-radius: 2px;
+  color: #000;
+  outline: none;
+  cursor: text;
+  white-space: pre-wrap;
+  line-height: 1.2;
+}
+
+.scene-field:hover {
+  background-color: rgba(0, 123, 204, 0.1);
+}
+
+.scene-field:focus {
+  background-color: white;
+  box-shadow: 0 0 0 2px #007bcc;
+}
+
+.add-scene-btn {
   background: #f0f0f0;
   border: 1px solid #ccc;
   color: #000;
   padding: 8px 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
   cursor: pointer;
   border-radius: 4px;
+  margin-top: 24pt;
 }
 
-.add-scene-button:hover {
+.add-scene-btn:hover {
   background: #e0e0e0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #666;
 }
 
 /* Print styles */
@@ -296,14 +300,19 @@
     padding: 0;
   }
   
-  .screenplay-page1,
   .screenplay-page {
     box-shadow: none;
     border: none;
     page-break-after: always;
   }
   
-  .add-scene-button {
-    display: none;
+  .add-scene-btn,
+  .scene-controls,
+  .remove-scene-btn {
+    display: none !important;
+  }
+  
+  .scene-block:hover .scene-controls {
+    opacity: 0 !important;
   }
 }
