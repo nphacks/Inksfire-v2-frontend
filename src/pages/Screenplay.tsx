@@ -9,10 +9,12 @@ export default function Screenplay() {
   const [screenplay, setScreenplay] = useState<any>(null);
   const [scenes, setScenes] = useState<any[]>([
     {
+      id: 1,
       slugline: 'INT. DILAPIDATED HOTEL ROOM - DAY',
       scene: 'Another BANG on the door- Saito, confident now, approaches Cobb. Nash is behind Saito.'
     }
   ]);
+  const [editingField, setEditingField] = useState<string | null>(null);
 
   useEffect(() => {
     const loadScreenplay = async () => {
@@ -24,91 +26,138 @@ export default function Screenplay() {
     loadScreenplay();
   }, [screenplay_id]);
 
-  const handleInputChange = (field: string, value: string) => {
-    setScreenplay((prev: any) => {
-      if (!prev) {
-        return { [field]: value };
-      }
-      return {...prev, [field]: value};
-    });
+  const handleFieldClick = (field: string) => {
+    setEditingField(field);
   };
 
-  const handleScreenplayUpdate = async (field: string, value: string) => {
-    console.log(`Updated ${field}:`, value);
-    await updateScreenplayDataInDB(screenplay_id!, field, value)
+  const handleFieldBlur = async (field: string, value: string) => {
+    setEditingField(null);
+    setScreenplay((prev: any) => ({
+      ...prev,
+      [field]: value
+    }));
+    await updateScreenplayDataInDB(screenplay_id!, field, value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      (e.target as HTMLElement).blur();
+    }
   };
 
   const addScene = () => {
-    setScenes(prev => [...prev, { slugline: '', scene: '' }]);
-  };
-
-  const handleSceneChange = (index: number, field: string, value: string) => {
-    setScenes(prev => prev.map((scene, i) => 
-      i === index ? { ...scene, [field]: value } : scene
-    ));
-  };
-
-  const handleSceneUpdate = async (index: number, field: string, value: string) => {
-    console.log(`Updated scene ${index} ${field}:`, value);
-    // Add your scene update API call here
+    const newScene = {
+      id: Date.now(),
+      slugline: '',
+      scene: ''
+    };
+    setScenes(prev => [...prev, newScene]);
   };
 
   return (
-    <>
-      {screenplay && (
-        <div>
-          <pre>{JSON.stringify(screenplay, null, 2)}</pre>
-        </div>
-      )}
+    <div className="screenplay-container">
       {screenplay && (
         <div className="screenplay">
           <div className="screenplay-page1">
             <div className="title-section">
-              <input
-                className="title-input"
-                value={screenplay?.title || ''}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('title', e.target.value)}
-                placeholder="TITLE"
-              />
+              {editingField === 'title' ? (
+                <input
+                  className="title-input editing"
+                  defaultValue={screenplay?.title || ''}
+                  onBlur={(e) => handleFieldBlur('title', e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, 'title')}
+                  autoFocus
+                  placeholder="TITLE"
+                />
+              ) : (
+                <div 
+                  className="title-display"
+                  onClick={() => handleFieldClick('title')}
+                >
+                  {screenplay?.title || 'UNTITLED'}
+                </div>
+              )}
+              
               <div className="written-by">Written by</div>
-              <input
-                className="author-input"
-                value={screenplay?.author || ''}
-                onChange={(e) => handleInputChange('author', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('author', e.target.value)}
-                placeholder="Author Name"
-              />
+              
+              {editingField === 'author' ? (
+                <input
+                  className="author-input editing"
+                  defaultValue={screenplay?.author || ''}
+                  onBlur={(e) => handleFieldBlur('author', e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, 'author')}
+                  autoFocus
+                  placeholder="Author Name"
+                />
+              ) : (
+                <div 
+                  className="author-display"
+                  onClick={() => handleFieldClick('author')}
+                >
+                  {screenplay?.author || 'Author Name'}
+                </div>
+              )}
               
               {(screenplay?.based_on || screenplay?.based_on === '') && (
                 <div className="based-on-section">
                   <div className="based-on-label">Based on</div>
-                  <input
-                    className="based-on-input"
-                    value={screenplay?.based_on || ''}
-                    onChange={(e) => handleInputChange('based_on', e.target.value)}
-                    onBlur={(e) => handleScreenplayUpdate('based_on', e.target.value)}
-                    placeholder="Source material"
-                  />
+                  {editingField === 'based_on' ? (
+                    <input
+                      className="based-on-input editing"
+                      defaultValue={screenplay?.based_on || ''}
+                      onBlur={(e) => handleFieldBlur('based_on', e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, 'based_on')}
+                      autoFocus
+                      placeholder="Source material"
+                    />
+                  ) : (
+                    <div 
+                      className="based-on-display"
+                      onClick={() => handleFieldClick('based_on')}
+                    >
+                      {screenplay?.based_on || 'Source material'}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
             
             <div className="contact-info">
-              <textarea
-                className="contact-input"
-                value={screenplay?.contact_information || ''}
-                onChange={(e) => handleInputChange('contact_information', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('contact_information', e.target.value)}
-                placeholder="Contact Information"
-              />
-              <input
-                type="date"
-                className="date-input"
-                value={screenplay?.draft_date || ''}
-                onChange={(e) => handleInputChange('draft_date', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('draft_date', e.target.value)}
-              />
+              {editingField === 'contact_information' ? (
+                <textarea
+                  className="contact-input editing"
+                  defaultValue={screenplay?.contact_information || ''}
+                  onBlur={(e) => handleFieldBlur('contact_information', e.target.value)}
+                  autoFocus
+                  placeholder="Contact Information"
+                />
+              ) : (
+                <div 
+                  className="contact-display"
+                  onClick={() => handleFieldClick('contact_information')}
+                >
+                  {screenplay?.contact_information || 'Contact Information'}
+                </div>
+              )}
+              
+              {editingField === 'draft_date' ? (
+                <input
+                  type="date"
+                  className="date-input editing"
+                  defaultValue={screenplay?.draft_date || ''}
+                  onBlur={(e) => handleFieldBlur('draft_date', e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, 'draft_date')}
+                  autoFocus
+                />
+              ) : (
+                <div 
+                  className="date-display"
+                  onClick={() => handleFieldClick('draft_date')}
+                >
+                  {screenplay?.draft_date || new Date().toLocaleDateString()}
+                </div>
+              )}
             </div>
           </div>
           
@@ -116,21 +165,61 @@ export default function Screenplay() {
             <button className="add-scene-button" onClick={addScene}>Add Scene</button>
             <div className="screenplay-page">
               <div className="page-number">2.</div>
-            {scenes.map((scene, index) => (
-              <div key={index} className="screenplay-scene">
-                <input 
-                  type="text" 
-                  name="slugline" 
-                  value={scene?.slugline || ''} 
-                  onChange={(e) => handleSceneChange(index, 'slugline', e.target.value)}
-                  onBlur={(e) => handleSceneUpdate(index, 'slugline', e.target.value)}
+              {scenes.map((scene, index) => (
+                <div key={scene.id} className="screenplay-scene">
+                  {editingField === `slugline-${scene.id}` ? (
+                    <input 
+                      className="slugline-input editing"
+                      defaultValue={scene?.slugline || ''} 
+                      onBlur={(e) => {
+                        setEditingField(null);
+                        setScenes(prev => prev.map(s => 
+                          s.id === scene.id ? { ...s, slugline: e.target.value } : s
+                        ));
+                      }}
+                      onKeyDown={(e) => handleKeyDown(e, `slugline-${scene.id}`)}
+                      autoFocus
+                      placeholder="INT./EXT. LOCATION - TIME"
+                    />
+                  ) : (
+                    <div 
+                      className="slugline-display"
+                      onClick={() => handleFieldClick(`slugline-${scene.id}`)}
+                    >
+                      {scene?.slugline || 'INT./EXT. LOCATION - TIME'}
+                    </div>
+                  )}
+                  
+                  {editingField === `scene-${scene.id}` ? (
+                    <textarea 
+                      className="scene-input editing"
+                      defaultValue={scene?.scene || ''} 
+                      onBlur={(e) => {
+                        setEditingField(null);
+                        setScenes(prev => prev.map(s => 
+                          s.id === scene.id ? { ...s, scene: e.target.value } : s
+                        ));
+                      }}
+                      autoFocus
                     placeholder="INT./EXT. LOCATION - TIME"
-                />
-                <textarea 
-                  name="scene" 
-                  value={scene?.scene || ''} 
-                  onChange={(e) => handleSceneChange(index, 'scene', e.target.value)}
-                  onBlur={(e) => handleSceneUpdate(index, 'scene', e.target.value)}
+                    />
+                  ) : (
+                    <div 
+                      className="scene-display"
+                      onClick={() => handleFieldClick(`scene-${scene.id}`)}
+                    >
+                      {scene?.scene || 'Scene description and dialogue...'}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
                     placeholder="Scene description and dialogue..."
                 />
               </div>
