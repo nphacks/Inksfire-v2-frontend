@@ -1,47 +1,229 @@
 .screenplay {
   font-family: 'Courier New', monospace;
   font-size: 12pt;
-  line-height: 1;
-  margin: 1in 1in 1in 1.5in;
-  width: 6in;
+  line-height: 1.2;
+  color: #000;
+  background: #fff;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .screenplay-page1 {
-  min-height: 11in;
+  width: 8.27in; /* A4 width */
+  height: 11.69in; /* A4 height */
+  margin: 1in 1in 1in 1.5in; /* Top, Right, Bottom, Left margins */
   position: relative;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  page-break-after: always;
 }
 
 .title-section {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  margin-top: 2in;
+  width: 100%;
 }
 
-.title-input, .author-input {
+.title-input {
   font-family: 'Courier New', monospace;
   font-size: 12pt;
   text-align: center;
   border: none;
   background: transparent;
   width: 100%;
-}
-
-.title-input {
   text-transform: uppercase;
   text-decoration: underline;
   font-weight: bold;
+  margin-bottom: 24pt;
+  outline: none;
+  resize: none;
 }
 
-.contact-input, .date-input {
+.title-input:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.written-by {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  margin-bottom: 12pt;
+  text-align: center;
+}
+
+.author-input {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  text-align: center;
+  border: none;
+  background: transparent;
+  width: 100%;
+  margin-bottom: 12pt;
+  outline: none;
+}
+
+.author-input:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.based-on-section {
+  margin-top: 24pt;
+}
+
+.based-on-label {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  text-align: center;
+  margin-bottom: 12pt;
+}
+
+.based-on-input {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  text-align: center;
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+}
+
+.based-on-input:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.contact-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.contact-input {
   font-family: 'Courier New', monospace;
   font-size: 12pt;
   border: none;
   background: transparent;
+  resize: none;
+  width: 200px;
+  height: 80px;
+  outline: none;
+}
+
+.contact-input:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.date-input {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  border: none;
+  background: transparent;
+  outline: none;
+  text-align: right;
+}
+
+.date-input:focus {
+  background: rgba(0,0,0,0.05);
 }
 
 .screenplay-pages {
-  margin-top: 1in;
+  margin-top: 20px;
+}
+
+.screenplay-page {
+  width: 8.27in; /* A4 width */
+  min-height: 11.69in; /* A4 height */
+  margin: 1in 1in 1in 1.5in; /* Top, Right, Bottom, Left margins */
+  position: relative;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  page-break-after: always;
+  padding-top: 0.5in; /* Space for page number */
+}
+
+.page-number {
+  position: absolute;
+  top: 0.5in;
+  right: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
 }
 
 .screenplay-scene {
-  margin-bottom: 0.5in;
+  margin-bottom: 24pt;
+}
+
+.screenplay-scene input[name="slugline"] {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 12pt;
+  outline: none;
+}
+
+.screenplay-scene input[name="slugline"]:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.screenplay-scene textarea[name="scene"] {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  border: none;
+  background: transparent;
+  width: 100%;
+  resize: none;
+  min-height: 60pt;
+  outline: none;
+  line-height: 1.2;
+}
+
+.screenplay-scene textarea[name="scene"]:focus {
+  background: rgba(0,0,0,0.05);
+}
+
+.add-scene-button {
+  font-family: 'Courier New', monospace;
+  font-size: 12pt;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.add-scene-button:hover {
+  background: #e0e0e0;
+}
+
+/* Print styles */
+@media print {
+  .screenplay-page1,
+  .screenplay-page {
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+  }
+  
+  .add-scene-button {
+    display: none;
+  }
+}
+
+/* Hide browser default styling for inputs and textareas */
+input, textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }

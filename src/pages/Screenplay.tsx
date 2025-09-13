@@ -79,6 +79,19 @@ export default function Screenplay() {
                 onBlur={(e) => handleScreenplayUpdate('author', e.target.value)}
                 placeholder="Author Name"
               />
+              
+              {(screenplay?.based_on || screenplay?.based_on === '') && (
+                <div className="based-on-section">
+                  <div className="based-on-label">Based on</div>
+                  <input
+                    className="based-on-input"
+                    value={screenplay?.based_on || ''}
+                    onChange={(e) => handleInputChange('based_on', e.target.value)}
+                    onBlur={(e) => handleScreenplayUpdate('based_on', e.target.value)}
+                    placeholder="Source material"
+                  />
+                </div>
+              )}
             </div>
             
             <div className="contact-info">
@@ -100,7 +113,9 @@ export default function Screenplay() {
           </div>
           
           <div className="screenplay-pages">
-            <button onClick={addScene}>Add scene</button>
+            <button className="add-scene-button" onClick={addScene}>Add Scene</button>
+            <div className="screenplay-page">
+              <div className="page-number">2.</div>
             {scenes.map((scene, index) => (
               <div key={index} className="screenplay-scene">
                 <input 
@@ -109,15 +124,18 @@ export default function Screenplay() {
                   value={scene?.slugline || ''} 
                   onChange={(e) => handleSceneChange(index, 'slugline', e.target.value)}
                   onBlur={(e) => handleSceneUpdate(index, 'slugline', e.target.value)}
+                    placeholder="INT./EXT. LOCATION - TIME"
                 />
                 <textarea 
                   name="scene" 
                   value={scene?.scene || ''} 
                   onChange={(e) => handleSceneChange(index, 'scene', e.target.value)}
                   onBlur={(e) => handleSceneUpdate(index, 'scene', e.target.value)}
+                    placeholder="Scene description and dialogue..."
                 />
               </div>
             ))}
+            </div>
           </div>
         </div>
         
