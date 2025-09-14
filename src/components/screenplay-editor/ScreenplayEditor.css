@@ -1,0 +1,90 @@
+.screenplay-app {
+  padding: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  background: #f0f0f0;
+  color: black;
+}
+
+.toolbar {
+  margin-bottom: 12px;
+}
+
+.toolbar button {
+  margin-right: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.a4-editor {
+  background: white;
+  padding: 20mm;
+  width: 210mm;
+  min-height: 297mm;
+  margin: auto;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  overflow: visible;
+}
+
+.slugline {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 16px 0;
+}
+
+.slugline-checkbox {
+  margin-right: 8px;
+  accent-color: black; /* tick color */
+  width: 16px;
+  height: 16px;
+  appearance: checkbox;
+}
+
+
+.action {
+  margin: 8px 0;
+}
+
+.character {
+  font-weight: bold;
+  margin: 12px 0 4px;
+  margin-left: 190px;
+  /* text-align: center; */
+}
+
+.dialogue {
+  margin-left: 120px;
+}
+
+.parenthetical {
+  margin-left: 160px;
+  font-style: italic;
+}
+
+.transition {
+  text-transform: uppercase;
+  text-align: right;
+  margin: 12px 0;
+}
+
+.json-output {
+  margin-top: 20px;
+  background: #fff;
+  padding: 12px;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.slugline, .action, .character, .dialogue, .parenthetical, .transition {
+  min-height: 1.2em; /* ensures block is tall enough for cursor */
+}
+
+.Editable:focus {
+  outline: none; /* optional, or use custom focus */
+}
+
+.Editable div:empty::before {
+  content: "\\200B"; /* zero-width space shows cursor in empty block */
+  display: inline-block;
+}

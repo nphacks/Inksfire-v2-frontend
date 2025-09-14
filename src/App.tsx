@@ -11,7 +11,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/screenplay/:screenplay_id?" element={<Screenplay />} />
-        <Route path="/shotlist" element={<Shotlist />} />
+        <Route path="/shotlist/:screenplay_id?" element={<Shotlist />} />
       </Routes>
     </BrowserRouter>
   );

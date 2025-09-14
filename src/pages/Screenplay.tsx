@@ -1,56 +1,46 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchScreenplayByIdFromDB, updateScreenplayDataInDB } from "../services/screenplay";
+import type { Descendant } from "slate";
+import { fetchScreenplayByIdFromDB, submitScreenplayDataInDB, updateScreenplayDataInDB } from "../services/screenplay";
 import "./styles/Screenplay.css";
+import ScreenplayEditor from "../components/screenplay-editor/ScreenplayEditor";
+import type { ScreenplayDataDB } from "../models/screenplay";
+
 
 export default function Screenplay() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { screenplay_id } = useParams();
-  const [screenplay, setScreenplay] = useState<any>(null);
-  const [scenes, setScenes] = useState<any[]>([
-    {
-      slugline: 'INT. DILAPIDATED HOTEL ROOM - DAY',
-      scene: 'Another BANG on the door- Saito, confident now, approaches Cobb. Nash is behind Saito.'
-    }
-  ]);
+  const [screenplay, setScreenplay] = useState<ScreenplayDataDB>();
 
   useEffect(() => {
     const loadScreenplay = async () => {
       if (screenplay_id) {
         const screenplayData = await fetchScreenplayByIdFromDB(screenplay_id);
-        setScreenplay(screenplayData);
+        setScreenplay(screenplayData!);
+        console.log(JSON.parse(screenplayData!.screenplay), screenplay)
       }
     };
     loadScreenplay();
   }, [screenplay_id]);
 
-  const handleInputChange = (field: string, value: string) => {
-    setScreenplay((prev: any) => {
-      if (!prev) {
-        return { [field]: value };
-      }
-      return {...prev, [field]: value};
-    });
+  // const initialValue: Descendant[] = [
+  //   { type: "slugline", children: [{ text: "INT. COFFEE SHOP - DAY" }] } as any,
+  //   { type: "action", children: [{ text: "A crowded café. Baristas rush between tables." }] } as any,
+  //   { type: "character", children: [{ text: "JANE" }] } as any,
+  //   { type: "parenthetical", children: [{ text: "(whispering)" }] } as any,
+  //   { type: "dialogue", children: [{ text: "Did you see him?" }] } as any,
+  // ];
+
+  const handleSave = async (payload: { value: Descendant[]; scenes: any[] }) => {
+    console.log("Slate Value:", payload.value);       // raw editor value
+    console.log("Structured Scenes:", payload.scenes, typeof payload.scenes); // parsed JSON
+    await updateScreenplayDataInDB(screenplay_id!, 'screenplay', { scenes: payload.value })
   };
 
-  const handleScreenplayUpdate = async (field: string, value: string) => {
-    console.log(`Updated ${field}:`, value);
-    await updateScreenplayDataInDB(screenplay_id!, field, value)
-  };
-
-  const addScene = () => {
-    setScenes(prev => [...prev, { slugline: '', scene: '' }]);
-  };
-
-  const handleSceneChange = (index: number, field: string, value: string) => {
-    setScenes(prev => prev.map((scene, i) => 
-      i === index ? { ...scene, [field]: value } : scene
-    ));
-  };
-
-  const handleSceneUpdate = async (index: number, field: string, value: string) => {
-    console.log(`Updated scene ${index} ${field}:`, value);
-    // Add your scene update API call here
+  const handleSubmit = async (payload: { value: Descendant[]; scenes: any[] }) => {
+    console.log("Slate Value:", payload.value);       // raw editor value
+    console.log("Structured Scenes:", payload.scenes, typeof payload.scenes); // parsed JSON
+    await submitScreenplayDataInDB(screenplay_id!, 'screenplay', { scenes: payload.value })
   };
 
   return (
@@ -61,66 +51,11 @@ export default function Screenplay() {
         </div>
       )}
       {screenplay && (
-        <div className="screenplay">
-          <div className="screenplay-page1">
-            <div className="title-section">
-              <input
-                className="title-input"
-                value={screenplay?.title || ''}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('title', e.target.value)}
-                placeholder="TITLE"
-              />
-              <div className="written-by">Written by</div>
-              <input
-                className="author-input"
-                value={screenplay?.author || ''}
-                onChange={(e) => handleInputChange('author', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('author', e.target.value)}
-                placeholder="Author Name"
-              />
-            </div>
-            
-            <div className="contact-info">
-              <textarea
-                className="contact-input"
-                value={screenplay?.contact_information || ''}
-                onChange={(e) => handleInputChange('contact_information', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('contact_information', e.target.value)}
-                placeholder="Contact Information"
-              />
-              <input
-                type="date"
-                className="date-input"
-                value={screenplay?.draft_date || ''}
-                onChange={(e) => handleInputChange('draft_date', e.target.value)}
-                onBlur={(e) => handleScreenplayUpdate('draft_date', e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <div className="screenplay-pages">
-            <button onClick={addScene}>Add scene</button>
-            {scenes.map((scene, index) => (
-              <div key={index} className="screenplay-scene">
-                <input 
-                  type="text" 
-                  name="slugline" 
-                  value={scene?.slugline || ''} 
-                  onChange={(e) => handleSceneChange(index, 'slugline', e.target.value)}
-                  onBlur={(e) => handleSceneUpdate(index, 'slugline', e.target.value)}
-                />
-                <textarea 
-                  name="scene" 
-                  value={scene?.scene || ''} 
-                  onChange={(e) => handleSceneChange(index, 'scene', e.target.value)}
-                  onBlur={(e) => handleSceneUpdate(index, 'scene', e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        
+        <ScreenplayEditor
+          initialValue={JSON.parse(screenplay.screenplay).scenes}
+          onSave={handleSave}
+          onSubmit={handleSubmit}
+        />
       )}
     </>
   );

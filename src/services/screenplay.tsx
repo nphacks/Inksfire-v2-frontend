@@ -1,3 +1,5 @@
+import type { ScreenplayDataDB } from "../models/screenplay";
+
 const API_BASE = import.meta.env.VITE_API_URL; 
 
 
@@ -18,7 +20,7 @@ export const fetchAllScreenplaysFromDB = async (): Promise<any[] | null> => {
     return data.status_code === 200 ? data.screenplays : null;
 };
 
-export const fetchScreenplayByIdFromDB = async (screenplay_id: string): Promise<any[] | null> => {
+export const fetchScreenplayByIdFromDB = async (screenplay_id: string): Promise<ScreenplayDataDB | null> => {
     const res = await fetch(`${API_BASE}/screenplay/get-screenplay-sid?screenplay_id=${screenplay_id}`, {
         method: 'GET',
         headers: {
@@ -64,7 +66,31 @@ export const createScreenplayInDB = async (): Promise<string | null> => {
 };
 
 export const updateScreenplayDataInDB = async (screenplay_id: string, field: string, value: any): Promise<boolean | null> => {
-     const res = await fetch(`${API_BASE}/screenplay/update-screenplay`, {
+    const res = await fetch(`${API_BASE}/screenplay/update-screenplay`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            screenplay_id: screenplay_id,
+            column: field,
+            value: value
+        })
+    });
+
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || `Error ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.status_code === 200 ? true : false;
+}
+
+export const submitScreenplayDataInDB = async (screenplay_id: string, field: string, value: any): Promise<boolean | null> => {
+     
+    
+    const res = await fetch(`${API_BASE}/screenplay/submit-screenplay`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
